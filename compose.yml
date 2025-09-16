@@ -2,8 +2,10 @@ services:
   hwkdb:
     image: docker.io/hwkcld/hwk-pgsql-17.0
     container_name: hwkdb
-    environment:
-        POSTGRES_PASSWORD: mypassword
+	environment:
+      POSTGRES_PASSWORD: "mypassword"
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "postgres"
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
