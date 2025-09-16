@@ -19,7 +19,10 @@ if [[ "$1" == "host" ]]; then
 
     sudo runuser -l ${pguser} -c "wget -O ~/setup-hwkdb.sh https://raw.githubusercontent.com/hwkcld/hwkdb/main/setup-hwkdb.sh && chmod 700 ~/setup-hwkdb.sh"
 
-    echo $?
+    sudo runuser -l ${pguser} -c "~/setup-hwkdb.sh"
+	
+	echo $?
+	
 else
     export XDG_RUNTIME_DIR=/run/user/${UID}
     echo XDG_RUNTIME_DIR = ${XDG_RUNTIME_DIR}
@@ -28,7 +31,7 @@ else
     podman volume create ${dbdata}
 
     echo Download the default postgres.conf
-    wget https://raw.githubusercontent.com/hwkcld/hwkdb/main/postgres.conf
+    wget -O ~/postgres.conf https://raw.githubusercontent.com/hwkcld/hwkdb/main/postgres.conf
 
     echo Create directory for quadlet
     mkdir -p ~/.config/containers/systemd
