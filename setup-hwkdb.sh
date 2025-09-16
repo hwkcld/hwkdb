@@ -16,7 +16,7 @@ if [[ "$1" == "host" ]]; then
     echo enable linger for ${pguser}
     sudo loginctl enable-linger ${pguser}
 
-    sudo runuser -l ${pguser} -c "wget -O ~/setup-hwkdb.sh https://raw.githubusercontent.com/hwkcld/hwkdb/main/setup-hwkdb.sh && chmod 700 ~/setup-hw"
+    sudo runuser -l ${pguser} -c "wget -O ~/setup-hwkdb.sh https://raw.githubusercontent.com/hwkcld/hwkdb/main/setup-hwkdb.sh && chmod 700 ~/setup-hwkdb.sh"
 
     if [ $? -eq 0 ]; then
         podman exec -it hwkdb psql -U ${pguser} -c "\password ${pguser};"
