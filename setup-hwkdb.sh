@@ -2,6 +2,7 @@
 
 pguser=postgres
 dbdata=postgres-data
+containername=hwkdb
 
 set -o pipefail
 
@@ -18,12 +19,6 @@ if [[ "$1" == "host" ]]; then
 
     sudo runuser -l ${pguser} -c "wget -O ~/setup-hwkdb.sh https://raw.githubusercontent.com/hwkcld/hwkdb/main/setup-hwkdb.sh && chmod 700 ~/setup-hwkdb.sh"
 
-    if [ $? -eq 0 ]; then
-        podman exec -it hwkdb psql -U ${pguser} -c "\password ${pguser};"
-    else
-        echo "failed."  
-    fi
-    
     echo $?
 else
     export XDG_RUNTIME_DIR=/run/user/${UID}
@@ -46,5 +41,14 @@ else
 
     echo Start the service using systemd i.e. auto reload even after system restart
     systemctl --user start hwkdb.service
-    
+
+    if [ $? -eq 0 ]; then
+        podman exec -it ${containername} psql -U ${pguser} -c "\password ${pguser};"
+        if [ $? -ne 0 ]; then
+		    echo You can manually set the password again
+		fi
+    else
+        echo "failed."  
+    fi
+        
 fi
