@@ -1,0 +1,17 @@
+[Unit]
+Description=hwkdb Container
+
+[Container]
+ContainerName=hwkdb
+AutoUpdate=local
+Image=docker.io/hwkcld/hwk-pgsql-17.0:latest
+Volume=postgres-data:/var/lib/postgresql/data
+Volume=/home/postgres/postgres.conf:/etc/postgresql/postgres.conf
+PublishPort=127.0.0.1:5432:5432
+Exec=-c "config_file=/etc/postgresql/postgres.conf"
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
