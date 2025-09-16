@@ -5,6 +5,9 @@ Description=hwkdb Container
 ContainerName=hwkdb
 AutoUpdate=local
 Image=docker.io/hwkcld/hwk-pgsql-17.0:latest
+Environment=POSTGRES_PASSWORD=mypassword
+Environment=POSTGRES_USER=postgres
+Environment=POSTGRES_DB=postgres
 Volume=postgres-data:/var/lib/postgresql/data
 Volume=/home/postgres/postgres.conf:/etc/postgresql/postgres.conf
 PublishPort=127.0.0.1:5432:5432
