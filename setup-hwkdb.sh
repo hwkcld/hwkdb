@@ -25,7 +25,7 @@ if [[ "$1" == "host" ]]; then
 	
 else
     export XDG_RUNTIME_DIR=/run/user/${UID}
-    echo XDG_RUNTIME_DIR = ${XDG_RUNTIME_DIR}
+    echo "XDG_RUNTIME_DIR = ${XDG_RUNTIME_DIR}"
 
     echo "create named volume for ${pguser}: ${dbdata}"
     podman volume create ${dbdata}
