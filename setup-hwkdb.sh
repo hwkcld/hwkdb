@@ -46,7 +46,7 @@ else
     echo "Download the default postgres.conf"
     configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${machine}/postgres.conf"
     wget -O ~/postgres.conf ${configfile}
-    if [[ $? ne 0 ]]; then
+    if [[ $? -ne 0 ]]; then
         echo "Cannot locate ${configfile}."
         exit 1
     fi
@@ -57,7 +57,7 @@ else
     echo "Download the default quadlet file"
     configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${machine}/hwkdb.container"
     wget -O ~/.config/containers/systemd/hwkdb.container ${configfile}
-    if [[ $? ne 0 ]]; then
+    if [[ $? -ne 0 ]]; then
         echo "Cannot locate ${configfile}."
         exit 1
     fi
