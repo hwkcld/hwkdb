@@ -43,9 +43,9 @@ else
     echo "create named volume for ${pguser}: ${dbdata}"
     podman volume create ${dbdata}
 
-    echo "Download the default postgres.conf"
-    configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${machine}/postgres.conf"
-    wget -O ~/postgres.conf ${configfile}
+    echo "Download the default postgresql.conf"
+    configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${machine}/postgresql.conf"
+    wget -O ~/postgresql.conf ${configfile}
     if [[ $? -ne 0 ]]; then
         echo "Cannot locate ${configfile}."
         exit 1
