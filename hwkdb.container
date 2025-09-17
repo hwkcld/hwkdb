@@ -16,8 +16,8 @@ PublishPort=127.0.0.1:5432:5432
 Exec=-c "config_file=/etc/postgresql/postgres.conf"
 
 [Service]
-MemoryHigh=800M
-MemoryMax=1G
+MemoryHigh=2.5G
+MemoryMax=3G
 Restart=always
 
 [Install]
