@@ -62,19 +62,19 @@ else
         exit 1
     fi
 
-    echo Create the hwkdb service
+    echo "Create the hwkdb service"
     systemctl --user daemon-reload
 
     echo "Start the service using systemd i.e. auto reload even after system restart"
-    systemctl --user start hwkdb.service
+    echo -e "\n" | systemctl --user start hwkdb.service
 
     if [ $? -eq 0 ]; then
-            echo "waiting for database server ..."
-            sleep 10
+        echo "waiting for database server ..."
+        sleep 10
         podman exec -it ${containername} psql -U ${pguser} -c "\password ${pguser};"
         if [ $? -ne 0 ]; then
-                    echo "You can manually set the password again"
-                fi
+            echo "You can manually set the password again"
+        fi
     else
         echo "failed."
     fi
