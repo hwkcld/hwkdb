@@ -11,9 +11,9 @@ Environment=POSTGRES_PASSWORD=mypassword
 Environment=POSTGRES_USER=postgres
 Environment=POSTGRES_DB=postgres
 Volume=postgres-data:/var/lib/postgresql/data
-Volume=/home/postgres/postgres.conf:/etc/postgresql/postgres.conf
+Volume=/home/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
 PublishPort=127.0.0.1:5432:5432
-Exec=-c "config_file=/etc/postgresql/postgres.conf"
+Exec=-c "config_file=/etc/postgresql/postgresql.conf"
 
 [Service]
 Restart=always
