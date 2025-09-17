@@ -44,13 +44,23 @@ else
     podman volume create ${dbdata}
 
     echo "Download the default postgres.conf"
-    wget -O ~/postgres.conf https://raw.githubusercontent.com/hwkcld/hwkdb/main/${machine}/postgres.conf
+    configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${machine}/postgres.conf"
+    wget -O ~/postgres.conf ${configfile}
+    if [[ $? ne 0 ]]; then
+        echo "Cannot locate ${configfile}."
+        exit 1
+    fi
 
     echo "Create directory for quadlet"
     mkdir -p ~/.config/containers/systemd
 
     echo "Download the default quadlet file"
-    wget -O ~/.config/containers/systemd/hwkdb.container https://raw.githubusercontent.com/hwkcld/hwkdb/main/${machine}/hwkdb.container
+    configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${machine}/hwkdb.container"
+    wget -O ~/.config/containers/systemd/hwkdb.container ${configfile}
+    if [[ $? ne 0 ]]; then
+        echo "Cannot locate ${configfile}."
+        exit 1
+    fi
 
     echo Create the hwkdb service
     systemctl --user daemon-reload
