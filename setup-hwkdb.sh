@@ -2,6 +2,7 @@
 
 pguser=postgres
 dbdata=postgres-data
+dblogs=postgres-logs
 containername=hwkdb
 
 set -o pipefail
@@ -43,6 +44,9 @@ else
     echo "create named volume for ${pguser}: ${dbdata}"
     podman volume create ${dbdata}
 
+    echo "create named volume for ${pguser}: ${dblogs}"
+    podman volume create ${dblogs}
+
     echo "Download the default postgresql.conf"
     configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${machine}/postgresql.conf"
     wget -O ~/postgresql.conf ${configfile}
@@ -55,18 +59,18 @@ else
     mkdir -p ~/.config/containers/systemd
 
     echo "Download the default quadlet file"
-    configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${machine}/hwkdb.container"
+    configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${machine}/${containername}.container"
     wget -O ~/.config/containers/systemd/hwkdb.container ${configfile}
     if [[ $? -ne 0 ]]; then
         echo "Cannot locate ${configfile}."
         exit 1
     fi
 
-    echo "Create the hwkdb service"
+    echo "Create the ${containername} service"
     systemctl --user daemon-reload
 
     echo "Start the service using systemd i.e. auto reload even after system restart"
-    echo -e "\n" | systemctl --user start hwkdb.service
+    echo -e "\n" | systemctl --user start ${containername}.service
 
     if [ $? -eq 0 ]; then
         echo "waiting for database server ..."
