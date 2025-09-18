@@ -17,7 +17,7 @@ if [[ "$1" == "host" ]]; then
     echo "Adding user: ${pguser} ..."
     sudo useradd -ms /bin/bash ${pguser}
     if [ $? -eq 0 ]; then
-      echo "Please enter password for ${pguser}"
+      echo "Please enter password for new user: ${pguser}"
       sudo passwd ${pguser}
     fi
 
@@ -72,14 +72,15 @@ else
     echo "Start the service using systemd i.e. auto reload even after system restart"
     echo -e "\n" | systemctl --user start ${containername}.service
 
-    if [ $? -eq 0 ]; then
-        echo "waiting for database server ..."
-        sleep 10
-        podman exec -it ${containername} psql -U ${pguser} -c "\password ${pguser};"
-        if [ $? -ne 0 ]; then
-            echo "You can manually set the password again"
-        fi
-    else
-        echo "failed."
-    fi
+    #if [ $? -eq 0 ]; then
+        # 
+        # echo "waiting for database server ..."
+        # sleep 10
+        # podman exec -it ${containername} psql -U ${pguser} -c "\password ${pguser};"
+        #if [ $? -ne 0 ]; then
+        #    echo "You can manually set the password again"
+        #fi
+    #else
+        #echo "failed."
+    #fi
 fi
