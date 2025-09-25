@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pguser=postgres
+pguser=hwkadmin
 dbdata=postgres-data
 dblogs=postgres-logs
 containername=hwkdb
