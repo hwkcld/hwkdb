@@ -6,7 +6,7 @@ Wants=network-online.target
 [Container]
 ContainerName=hwkdb
 AutoUpdate=local
-Image=docker.io/hwkcld/hwk-pgsql-17.0:latest
+Image=docker.io/library/postgres:17
 Environment=POSTGRES_PASSWORD=mypassword
 Environment=POSTGRES_USER=hwkadmin
 Environment=POSTGRES_DB=hwkdb
