@@ -55,6 +55,12 @@ else
         exit 1
     fi
 
+    podman pull docker.io/library/postgres:17
+    if [[ $? -ne 0 ]]; then
+        echo "podman pull failed"
+        exit 1
+    fi
+    
     echo "Create directory for quadlet"
     mkdir -p ~/.config/containers/systemd
 
