@@ -65,7 +65,7 @@ else
 
     echo "Download the default quadlet file"
     configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${machine}/${containername}.container"
-    localconfig="~/.config/containers/systemd/${containername}.container"
+    localconfig="${HOME}/.config/containers/systemd/${containername}.container"
     wget -O $localconfig ${configfile}
     if [[ $? -ne 0 ]]; then
         echo "Cannot locate ${configfile}."
