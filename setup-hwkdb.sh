@@ -1,7 +1,6 @@
 #!/bin/bash
 
 osuser=postgres
-pguser=hwkadmin
 dbdata=postgres-data
 dblogs=postgres-logs
 containername=hwkdb
@@ -26,8 +25,6 @@ if [[ "$1" == "host" ]]; then
     sudo loginctl enable-linger ${osuser}
 
     sudo runuser -l ${osuser} -c "wget -O ~/setup-hwkdb.sh https://raw.githubusercontent.com/hwkcld/hwkdb/main/setup-hwkdb.sh && chmod 700 ~/setup-hwkdb.sh && ~/setup-hwkdb.sh $2"
-
-    # sudo runuser -l ${pguser} -c "~/setup-hwkdb.sh $2"
 
     echo "Status: $?"
 
