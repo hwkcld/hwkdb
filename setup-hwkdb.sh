@@ -1,5 +1,6 @@
 #!/bin/bash
 
+dbimage="docker.io/library/postgres:17"
 osuser=postgres
 dbdata=postgres-data
 dblogs=postgres-logs
@@ -53,7 +54,7 @@ else
         exit 1
     fi
 
-    podman pull docker.io/library/postgres:17
+    podman pull $dbimage
     if [[ $? -ne 0 ]]; then
         echo "podman pull failed"
         exit 1
@@ -64,11 +65,15 @@ else
 
     echo "Download the default quadlet file"
     configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${machine}/${containername}.container"
-    wget -O ~/.config/containers/systemd/hwkdb.container ${configfile}
+    localconfig="~/.config/containers/systemd/${containername}.container"
+    wget -O $localconfig ${configfile}
     if [[ $? -ne 0 ]]; then
         echo "Cannot locate ${configfile}."
         exit 1
     fi
+
+    sed -i -e "s|%dbimage%|${dbimage}|g" \
+    -e "s|%container-name%|${containername}|g" $localconfig
 
     echo "Create the ${containername} service"
     systemctl --user daemon-reload
