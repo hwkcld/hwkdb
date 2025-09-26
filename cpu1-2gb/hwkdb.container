@@ -1,15 +1,13 @@
 [Unit]
-Description=hwkdb Container
+Description=%container-name% Container
 After=network-online.target
 Wants=network-online.target
 
 [Container]
-ContainerName=hwkdb
+ContainerName=%container-name%
 AutoUpdate=local
-Image=docker.io/library/postgres:17
+Image=%dbimage%
 Environment=POSTGRES_PASSWORD=mypassword
-Environment=POSTGRES_USER=hwkadmin
-Environment=POSTGRES_DB=hwkdb
 Volume=postgres-data:/var/lib/postgresql/data
 Volume=postgres-logs:/var/log/postgresql
 Volume=/home/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
