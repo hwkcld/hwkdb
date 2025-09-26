@@ -82,8 +82,12 @@ else
 
     echo "Start the service using systemd i.e. auto reload even after system restart"
     echo -e "\n" | systemctl --user start ${containername}.service
+    if [[ $? -ne 0 ]]; then
+        echo "Failed starting server"
+        exit 1
+    fi
 
-    echo "Waitig for server ... "
+    echo "Waiting for server ... "
     sleep 10
     
     # Create application user with CREATEDB permission
