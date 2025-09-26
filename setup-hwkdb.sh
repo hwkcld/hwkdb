@@ -1,5 +1,6 @@
 #!/bin/bash
 
+osuser=postgres
 pguser=hwkadmin
 dbdata=postgres-data
 dblogs=postgres-logs
@@ -14,17 +15,17 @@ if [[ "$1" == "host" ]]; then
        exit 1
     fi
 
-    echo "Adding user: ${pguser} ..."
-    sudo useradd -ms /bin/bash ${pguser}
+    echo "Adding user: ${osuser} ..."
+    sudo useradd -ms /bin/bash ${osuser}
     if [ $? -eq 0 ]; then
-      echo "Please enter password for new user: ${pguser}"
-      sudo passwd ${pguser}
+      echo "Please enter password for new user: ${osuser}"
+      sudo passwd ${osuser}
     fi
 
-    echo "enable linger for ${pguser}"
-    sudo loginctl enable-linger ${pguser}
+    echo "enable linger for ${osuser}"
+    sudo loginctl enable-linger ${osuser}
 
-    sudo runuser -l ${pguser} -c "wget -O ~/setup-hwkdb.sh https://raw.githubusercontent.com/hwkcld/hwkdb/main/setup-hwkdb.sh && chmod 700 ~/setup-hwkdb.sh && ~/setup-hwkdb.sh $2"
+    sudo runuser -l ${osuser} -c "wget -O ~/setup-hwkdb.sh https://raw.githubusercontent.com/hwkcld/hwkdb/main/setup-hwkdb.sh && chmod 700 ~/setup-hwkdb.sh && ~/setup-hwkdb.sh $2"
 
     # sudo runuser -l ${pguser} -c "~/setup-hwkdb.sh $2"
 
@@ -41,10 +42,10 @@ else
     export XDG_RUNTIME_DIR=/run/user/${UID}
     echo "XDG_RUNTIME_DIR = ${XDG_RUNTIME_DIR}"
 
-    echo "create named volume for ${pguser}: ${dbdata}"
+    echo "create named volume for ${osuser}: ${dbdata}"
     podman volume create ${dbdata}
 
-    echo "create named volume for ${pguser}: ${dblogs}"
+    echo "create named volume for ${osuser}: ${dblogs}"
     podman volume create ${dblogs}
 
     echo "Download the default postgresql.conf"
