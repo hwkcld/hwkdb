@@ -1,6 +1,7 @@
 #!/bin/bash
 
-dbimage="docker.io/library/postgres:17"
+# dbimage="docker.io/library/postgres:17"
+dbimage="docker.io/hwkcld/hwkdb-17.0:latest"
 osuser=postgres
 dbdata=postgres-data
 dblogs=postgres-logs
