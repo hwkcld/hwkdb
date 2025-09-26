@@ -3,6 +3,7 @@
 # dbimage="docker.io/library/postgres:17"
 dbimage="docker.io/hwkcld/hwkdb-17.0:latest"
 osuser=postgres
+appuser=hwk
 dbdata=postgres-data
 dblogs=postgres-logs
 containername=hwkdb
@@ -81,6 +82,17 @@ else
 
     echo "Start the service using systemd i.e. auto reload even after system restart"
     echo -e "\n" | systemctl --user start ${containername}.service
+
+    echo "Waitig for server ... "
+    sleep 10
+    
+    # Create application user with CREATEDB permission
+    echo "Creating application user ... "
+    podman exec -it ${containername} psql -U postgres -c "CREATE USER ${appuser} WITH PASSWORD 'mypass' CREATEDB;"
+    echo "Creating application database ... "
+    podman exec -it ${containername} psql -U postgres -c "CREATE DATABASE ${appuser};" 
+    echo "Assigning application database to application user ... "
+    podman exec -it ${containername} psql -U postgres -c "ALTER DATABASE ${appuser} OWNER TO ${appuser};"
 
     #if [ $? -eq 0 ]; then
         # 
