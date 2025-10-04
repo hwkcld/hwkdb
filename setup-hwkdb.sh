@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # dbimage="docker.io/library/postgres:17"
-dbimage="docker.io/hwkcld/hwkdb-17.0:latest"
+dbimage="docker.io/hwkcld/hwkdb:17"
 osuser=postgres
 appuser=hwk
 dbdata=postgres-data
@@ -87,16 +87,16 @@ else
         exit 1
     fi
 
-    echo "Waiting for server ... "
-    sleep 10
+    #echo "Waiting for server ... "
+    #sleep 10
     
     # Create application user with CREATEDB permission
-    echo "Creating application user ... "
-    podman exec -it ${containername} psql -U postgres -c "CREATE USER ${appuser} WITH PASSWORD 'mypass' CREATEDB;"
-    echo "Creating application database ... "
-    podman exec -it ${containername} psql -U postgres -c "CREATE DATABASE ${appuser};" 
-    echo "Assigning application database to application user ... "
-    podman exec -it ${containername} psql -U postgres -c "ALTER DATABASE ${appuser} OWNER TO ${appuser};"
+    #echo "Creating application user ... "
+    #podman exec -it ${containername} psql -U postgres -c "CREATE USER ${appuser} WITH PASSWORD 'mypass' CREATEDB;"
+    #echo "Creating application database ... "
+    #podman exec -it ${containername} psql -U postgres -c "CREATE DATABASE ${appuser};" 
+    #echo "Assigning application database to application user ... "
+    #podman exec -it ${containername} psql -U postgres -c "ALTER DATABASE ${appuser} OWNER TO ${appuser};"
 
     #if [ $? -eq 0 ]; then
         # 
