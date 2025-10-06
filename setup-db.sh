@@ -62,9 +62,9 @@ if [ -z "$MACHINE" ]; then
 fi
 
 # Your script logic here
-echo "Host: ${HOST_MODE}"
-echo "Image: ${IMAGE}"
-echo "Machine: ${MACHINE}"
+#echo "Host: ${HOST_MODE}"
+#echo "Image: ${IMAGE}"
+#echo "Machine: ${MACHINE}"
 
 # OCI_IMAGE="docker.io/library/postgres:17"
 OCI_IMAGE="docker.io/hwkcld/${IMAGE}"
