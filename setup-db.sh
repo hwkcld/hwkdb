@@ -66,25 +66,25 @@ echo "Host: ${HOST_MODE}"
 echo "Image: ${IMAGE}"
 echo "Machine: ${MACHINE}"
 
-# oci-image="docker.io/library/postgres:17"
-oci-image="docker.io/hwkcld/${IMAGE}"
-osuser=dbuser
+# OCI_IMAGE="docker.io/library/postgres:17"
+OCI_IMAGE="docker.io/hwkcld/${IMAGE}"
+OS_USER=dbuser
 
 set -o pipefail
 
 if [ "$HOST_MODE" = true ]; then
 
-    echo "Adding user: ${osuser} ..."
-    sudo useradd -ms /bin/bash ${osuser}
+    echo "Adding user: ${OS_USER} ..."
+    sudo useradd -ms /bin/bash ${OS_USER}
     if [ $? -eq 0 ]; then
-      echo "Please enter password for new user: ${osuser}"
-      sudo passwd ${osuser}
+      echo "Please enter password for new user: ${OS_USER}"
+      sudo passwd ${OS_USER}
     fi
 
-    echo "enable linger for ${osuser}"
-    sudo loginctl enable-linger ${osuser}
+    echo "enable linger for ${OS_USER}"
+    sudo loginctl enable-linger ${OS_USER}
 
-    sudo runuser -l ${osuser} -c "wget -O ~/setup-db.sh https://raw.githubusercontent.com/hwkcld/hwkdb/main/setup-db.sh && chmod 700 ~/setup-db.sh && ~/setup-db.sh -i ${IMAGE} -m ${MACHINE}"
+    sudo runuser -l ${OS_USER} -c "wget -O ~/setup-db.sh https://raw.githubusercontent.com/hwkcld/hwkdb/main/setup-db.sh && chmod 700 ~/setup-db.sh && ~/setup-db.sh -i ${IMAGE} -m ${MACHINE}"
 
     echo "Status: $?"
 
@@ -96,36 +96,36 @@ else
         exit 1
     fi
 
-    podman pull ${oci-image}
+    podman pull ${OCI_IMAGE}
     if [[ $? -ne 0 ]]; then
-        echo "Failed downloading ${oci-image}."
+        echo "Failed downloading ${OCI_IMAGE}."
         exit 1
     fi
 
     # Get unique name for new container from podman
     podman run -d busybox \
-        && containername=$(podman ps -a --filter "ancestor=busybox:latest" --sort created --format "{{.Names}}" | tail -1) \
-        && podman rm $containername
+        && CONTAINER_NAME=$(podman ps -a --filter "ancestor=busybox:latest" --sort created --format "{{.Names}}" | tail -1) \
+        && podman rm $CONTAINER_NAME
 
-    mount-data=$containername-data
-    mount-logs=$containername-logs
-    container-config=${HOME}/${containername}
+    MOUNT_DATA=$CONTAINER_NAME-data
+    MOUNT_LOGS=$CONTAINER_NAME-logs
+    CONTAINER_CONFIG=${HOME}/${CONTAINER_NAME}
 
     export XDG_RUNTIME_DIR=/run/user/${UID}
     echo "XDG_RUNTIME_DIR = ${XDG_RUNTIME_DIR}"
 
-    echo "create named volume for ${osuser}: ${mount-data}"
-    podman volume create ${mount-data}
+    echo "create named volume for ${OS_USER}: ${MOUNT_DATA}"
+    podman volume create ${MOUNT_DATA}
 
-    echo "create named volume for ${osuser}: ${mount-logs}"
-    podman volume create ${mount-logs}
+    echo "create named volume for ${OS_USER}: ${MOUNT_LOGS}"
+    podman volume create ${MOUNT_LOGS}
 
 
     echo "Download the default postgresql.conf"
     configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${MACHINE}/postgresql.conf"
     
-    mkdir -p ${container-config}
-    wget -O ${container-config}/postgresql.conf ${configfile}
+    mkdir -p ${CONTAINER_CONFIG}
+    wget -O ${CONTAINER_CONFIG}/postgresql.conf ${configfile}
     if [[ $? -ne 0 ]]; then
         echo "Error downloading ${configfile}."
         exit 1
@@ -136,25 +136,25 @@ else
 
     echo "Download the default quadlet template"
     configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${MACHINE}/quadlet.template"
-    localconfig="${HOME}/.config/containers/systemd/${containername}.container"
+    localconfig="${HOME}/.config/containers/systemd/${CONTAINER_NAME}.container"
     wget -O $localconfig ${configfile}
     if [[ $? -ne 0 ]]; then
         echo "Error downloading ${configfile}."
         exit 1
     fi
 
-    sed -i -e "s|%oci-image%|${oci-image}|g" \
-    -e "s|%container-name%|${containername}|g" \
-    -e "s|%mount-data%|${mount-data}|g" \
-    -e "s|%mount-logs%|${mount-logs}|g" \
-    -e "s|%container-config%|${container-config}|g" \
+    sed -i -e "s|%OCI_IMAGE%|${OCI_IMAGE}|g" \
+    -e "s|%CONTAINER_NAME%|${CONTAINER_NAME}|g" \
+    -e "s|%MOUNT_DATA%|${MOUNT_DATA}|g" \
+    -e "s|%MOUNT_LOGS%|${MOUNT_LOGS}|g" \
+    -e "s|%CONTAINER_CONFIG%|${CONTAINER_CONFIG}|g" \
     $localconfig
 
-    echo "Create the ${containername} service"
+    echo "Create the ${CONTAINER_NAME} service"
     systemctl --user daemon-reload
 
     echo "Start the service using systemd i.e. auto reload even after system restart"
-    echo -e "\n" | systemctl --user start ${containername}.service
+    echo -e "\n" | systemctl --user start ${CONTAINER_NAME}.service
     if [[ $? -ne 0 ]]; then
         echo "Failed starting server"
         exit 1
@@ -165,17 +165,17 @@ else
     
     # Create application user with CREATEDB permission
     #echo "Creating application user ... "
-    #podman exec -it ${containername} psql -U postgres -c "CREATE USER ${appuser} WITH PASSWORD 'mypass' CREATEDB;"
+    #podman exec -it ${CONTAINER_NAME} psql -U postgres -c "CREATE USER ${appuser} WITH PASSWORD 'mypass' CREATEDB;"
     #echo "Creating application database ... "
-    #podman exec -it ${containername} psql -U postgres -c "CREATE DATABASE ${appuser};" 
+    #podman exec -it ${CONTAINER_NAME} psql -U postgres -c "CREATE DATABASE ${appuser};" 
     #echo "Assigning application database to application user ... "
-    #podman exec -it ${containername} psql -U postgres -c "ALTER DATABASE ${appuser} OWNER TO ${appuser};"
+    #podman exec -it ${CONTAINER_NAME} psql -U postgres -c "ALTER DATABASE ${appuser} OWNER TO ${appuser};"
 
     #if [ $? -eq 0 ]; then
         # 
         # echo "waiting for database server ..."
         # sleep 10
-        # podman exec -it ${containername} psql -U ${pguser} -c "\password ${pguser};"
+        # podman exec -it ${CONTAINER_NAME} psql -U ${pguser} -c "\password ${pguser};"
         #if [ $? -ne 0 ]; then
         #    echo "You can manually set the password again"
         #fi
