@@ -1,0 +1,21 @@
+[Unit]
+Description=%container-name% Container
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+ContainerName=%container-name%
+AutoUpdate=local
+Image=%dbimage%
+Environment=POSTGRES_PASSWORD=mypassword
+Volume=%mount-data%:/var/lib/postgresql/data
+Volume=%mount-logs%:/var/log/postgresql
+Volume=%container-config%/postgresql.conf:/etc/postgresql/postgresql.conf
+PublishPort=127.0.0.1:5432:5432
+Exec=-c "config_file=/etc/postgresql/postgresql.conf"
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
