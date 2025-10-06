@@ -6,8 +6,7 @@ Wants=network-online.target
 [Container]
 ContainerName=%container-name%
 AutoUpdate=local
-Image=%dbimage%
-Environment=POSTGRES_PASSWORD=mypassword
+Image=%oci-image%
 Volume=%mount-data%:/var/lib/postgresql/data
 Volume=%mount-logs%:/var/log/postgresql
 Volume=%container-config%/postgresql.conf:/etc/postgresql/postgresql.conf
