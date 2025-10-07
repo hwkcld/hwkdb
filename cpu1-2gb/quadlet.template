@@ -9,7 +9,7 @@ AutoUpdate=local
 Image=%OCI_IMAGE%
 Volume=%MOUNT_DATA%:/var/lib/postgresql/data
 Volume=%MOUNT_LOGS%:/var/log/postgresql
-Volume=%CONTAINER_CONFIG%/postgresql.conf:/etc/postgresql/postgresql.conf
+Volume=%CONFIG_PATH%/postgresql.conf:/etc/postgresql/postgresql.conf
 PublishPort=127.0.0.1:5432:5432
 Exec=-c "config_file=/etc/postgresql/postgresql.conf"
 

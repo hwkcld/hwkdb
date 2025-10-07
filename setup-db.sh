@@ -105,11 +105,12 @@ else
     # Get unique name for new container from podman
     podman run -d busybox \
         && CONTAINER_NAME=$(podman ps -a --filter "ancestor=busybox:latest" --sort created --format "{{.Names}}" | tail -1) \
-        && podman rm $CONTAINER_NAME
+        && podman rm ${CONTAINER_NAME}
 
-    MOUNT_DATA=$CONTAINER_NAME-data
-    MOUNT_LOGS=$CONTAINER_NAME-logs
-    CONTAINER_CONFIG=${HOME}/${CONTAINER_NAME}
+    MOUNT_DATA=${CONTAINER_NAME}-data
+    MOUNT_LOGS=${CONTAINER_NAME}-logs
+    CONFIG_PATH=${HOME}/${CONTAINER_NAME}
+    QUADLET_PATH=${HOME}/.config/containers/systemd
 
     export XDG_RUNTIME_DIR=/run/user/${UID}
     echo "XDG_RUNTIME_DIR = ${XDG_RUNTIME_DIR}"
@@ -120,26 +121,31 @@ else
     echo "create named volume for ${OS_USER}: ${MOUNT_LOGS}"
     podman volume create ${MOUNT_LOGS}
 
+    echo "Create directory for config files"
+    mkdir -p ${CONFIG_PATH}
 
-    echo "Download the default postgresql.conf"
-    configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${MACHINE}/postgresql.conf"
-    
-    mkdir -p ${CONTAINER_CONFIG}
-    wget -O ${CONTAINER_CONFIG}/postgresql.conf ${configfile}
+    config_file=postgresql.conf
+    echo "Download the default ${config_file}"
+    srcfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${MACHINE}/${config_file}"
+
+    wget -O ${CONFIG_PATH}/${config_file} ${srcfile}
     if [[ $? -ne 0 ]]; then
-        echo "Error downloading ${configfile}."
+        echo "Error downloading ${srcfile}."
         exit 1
     fi
 
     echo "Create directory for quadlet"
-    mkdir -p ~/.config/containers/systemd
+    mkdir -p ${QUADLET_PATH}
 
-    echo "Download the default quadlet template"
-    configfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${MACHINE}/quadlet.template"
-    localconfig="${HOME}/.config/containers/systemd/${CONTAINER_NAME}.container"
-    wget -O $localconfig ${configfile}
+    quadlet_template=quadlet.template
+    echo "Download the default ${quadlet_template}"
+    srcfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${MACHINE}/${quadlet_template}"
+
+    quadlet_file=${QUADLET_PATH}/${CONTAINER_NAME}.container
+    
+    wget -O ${quadlet_file} ${srcfile}
     if [[ $? -ne 0 ]]; then
-        echo "Error downloading ${configfile}."
+        echo "Error downloading ${srcfile}."
         exit 1
     fi
 
@@ -147,8 +153,8 @@ else
     -e "s|%CONTAINER_NAME%|${CONTAINER_NAME}|g" \
     -e "s|%MOUNT_DATA%|${MOUNT_DATA}|g" \
     -e "s|%MOUNT_LOGS%|${MOUNT_LOGS}|g" \
-    -e "s|%CONTAINER_CONFIG%|${CONTAINER_CONFIG}|g" \
-    $localconfig
+    -e "s|%CONFIG_PATH%|${CONFIG_PATH}|g" \
+    ${quadlet_file}
 
     echo "Create the ${CONTAINER_NAME} service"
     systemctl --user daemon-reload
