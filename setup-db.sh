@@ -66,8 +66,6 @@ fi
 #echo "Image: ${IMAGE}"
 #echo "Machine: ${MACHINE}"
 
-# OCI_IMAGE="docker.io/library/postgres:17"
-OCI_IMAGE="docker.io/hwkcld/${IMAGE}"
 OS_USER=dbuser
 
 set -o pipefail
@@ -89,6 +87,8 @@ if [ "$HOST_MODE" = true ]; then
     echo "Status: $?"
 
 else
+
+    OCI_IMAGE="docker.io/hwkcld/${IMAGE}"
 
     podman pull docker.io/library/busybox
     if [[ $? -ne 0 ]]; then
