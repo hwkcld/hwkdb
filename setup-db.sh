@@ -67,6 +67,9 @@ fi
 #echo "Machine: ${MACHINE}"
 
 OS_USER=dbuser
+REPO_SOURCE=https://raw.githubusercontent.com/hwkcld/hwkdb/main
+SETUP_SCR=setup-db.sh
+CTN_CONFIG=postgresql.conf
 
 set -o pipefail
 
@@ -82,7 +85,7 @@ if [ "$HOST_MODE" = true ]; then
     echo "enable linger for ${OS_USER}"
     sudo loginctl enable-linger ${OS_USER}
 
-    sudo runuser -l ${OS_USER} -c "wget -O ~/setup-db.sh https://raw.githubusercontent.com/hwkcld/hwkdb/main/setup-db.sh && chmod 700 ~/setup-db.sh && ~/setup-db.sh -i ${IMAGE} -m ${MACHINE}"
+    sudo runuser -l ${OS_USER} -c "wget -O ~/${SETUP_SCR} ${REPO_SOURCE}/${SETUP_SCR} && chmod 700 ~/${SETUP_SCR} && ~/${SETUP_SCR} -i ${IMAGE} -m ${MACHINE}"
 
     echo "Status: $?"
 
@@ -90,7 +93,7 @@ else
 
     OCI_IMAGE="docker.io/hwkcld/${IMAGE}"
 
-    podman pull docker.io/library/busybox
+    podman pull docker.io/library/busybox:latest
     if [[ $? -ne 0 ]]; then
         echo "Failed downloading busybox."
         exit 1
@@ -124,11 +127,10 @@ else
     echo "Create directory for config files"
     mkdir -p ${CONFIG_PATH}
 
-    config_file=postgresql.conf
-    echo "Download the default ${config_file}"
-    srcfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${MACHINE}/${config_file}"
+    echo "Download the default ${CTN_CONFIG}"
+    srcfile="${REPO_SOURCE}/${MACHINE}/${CTN_CONFIG}"
 
-    wget -O ${CONFIG_PATH}/${config_file} ${srcfile}
+    wget -O ${CONFIG_PATH}/${CTN_CONFIG} ${srcfile}
     if [[ $? -ne 0 ]]; then
         echo "Error downloading ${srcfile}."
         exit 1
@@ -139,7 +141,7 @@ else
 
     quadlet_template=quadlet.template
     echo "Download the default ${quadlet_template}"
-    srcfile="https://raw.githubusercontent.com/hwkcld/hwkdb/main/${MACHINE}/${quadlet_template}"
+    srcfile="${REPO_SOURCE}/${MACHINE}/${quadlet_template}"
 
     quadlet_file=${QUADLET_PATH}/${CONTAINER_NAME}.container
     
@@ -166,26 +168,4 @@ else
         exit 1
     fi
 
-    #echo "Waiting for server ... "
-    #sleep 10
-    
-    # Create application user with CREATEDB permission
-    #echo "Creating application user ... "
-    #podman exec -it ${CONTAINER_NAME} psql -U postgres -c "CREATE USER ${appuser} WITH PASSWORD 'mypass' CREATEDB;"
-    #echo "Creating application database ... "
-    #podman exec -it ${CONTAINER_NAME} psql -U postgres -c "CREATE DATABASE ${appuser};" 
-    #echo "Assigning application database to application user ... "
-    #podman exec -it ${CONTAINER_NAME} psql -U postgres -c "ALTER DATABASE ${appuser} OWNER TO ${appuser};"
-
-    #if [ $? -eq 0 ]; then
-        # 
-        # echo "waiting for database server ..."
-        # sleep 10
-        # podman exec -it ${CONTAINER_NAME} psql -U ${pguser} -c "\password ${pguser};"
-        #if [ $? -ne 0 ]; then
-        #    echo "You can manually set the password again"
-        #fi
-    #else
-        #echo "failed."
-    #fi
 fi
