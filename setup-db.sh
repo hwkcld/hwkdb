@@ -8,8 +8,8 @@ MACHINE=""
 # Function to display usage
 usage() {
     echo
-    echo "Usage: $0 [-h] [-i image] [-m machine]"
-    echo "  -h          Specify script is run from host"
+    echo "Usage: $0 [-a] [-i image] [-m machine]"
+    echo "  -a          Specify script is run from admin"
     echo "  -i image    Specify the image name"
     echo "  -m machine  Specify the machine name e.g. cpu1-2gb"
     echo
@@ -22,12 +22,12 @@ if [ $# -eq 0 ]; then
 fi
 
 # Parse command-line options
-# h - flag with no argument
+# a - flag with no argument
 # i: - option that requires an argument (the colon means "takes a value")
 # m: - option that requires an argument
-while getopts "hi:m:" opt; do
+while getopts "ai:m:" opt; do
     case $opt in
-        h)
+        a)
             HOST_MODE=true
             ;;
         i)
